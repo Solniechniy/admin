@@ -8,19 +8,17 @@ import type { NetworkConfig } from "@/config/networks";
 import { useAccount } from "wagmi";
 import { useChainId } from "wagmi";
 import { useSwitchChain } from "wagmi";
-import { switchChain } from "@wagmi/core";
 
 export default function App() {
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkConfig | null>(
     null
   );
-  const [isWalletConnected, setIsWalletConnected] = useState(false);
+
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
   const { isPending } = useSwitchChain();
   const handleNetworkChange = (network: NetworkConfig | null) => {
     setSelectedNetwork(network);
-    setIsWalletConnected(false);
   };
 
   useEffect(() => {
