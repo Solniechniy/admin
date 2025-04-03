@@ -106,7 +106,7 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Admin Panel</h2>
         <Button
-          variant="outline"
+          variant="default"
           size="sm"
           onClick={loadContractData}
           disabled={isLoading}
@@ -144,6 +144,7 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
         </CardContent>
         <CardFooter>
           <Button
+            variant="default"
             onClick={() => updateFees("create", createFee)}
             disabled={isLoading || isSaving === "create"}
             className="w-full text-black"
@@ -171,6 +172,7 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
         </CardContent>
         <CardFooter>
           <Button
+            variant="default"
             onClick={() => updateFees("update", updateFee)}
             disabled={isLoading || isSaving === "update"}
             className="w-full text-black"
