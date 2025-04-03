@@ -1,13 +1,12 @@
-"use client";
-
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { NetworkSelector } from "@/components/network-selector";
 import { WalletConnector } from "@/components/wallet-connector";
 import { AdminPanel } from "@/components/admin-panel";
 import type { NetworkConfig } from "@/config/networks";
 import { useAccount } from "wagmi";
-import { useChainId } from "wagmi";
-import { useSwitchChain } from "wagmi";
+
+import { config } from "@/config/networks";
+import { getConnections, switchChain } from "@wagmi/core";
 
 export default function App() {
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkConfig | null>(
@@ -15,21 +14,25 @@ export default function App() {
   );
 
   const { address, isConnected } = useAccount();
-  const chainId = useChainId();
-  const { isPending } = useSwitchChain();
-  const handleNetworkChange = (network: NetworkConfig | null) => {
-    setSelectedNetwork(network);
-  };
 
-  useEffect(() => {
-    const switchChain = async (id: number) => {
-      await switchChain(id);
-    };
-
-    if (selectedNetwork && chainId !== selectedNetwork.chain.id && !isPending) {
-      switchChain(selectedNetwork.chain.id);
+  const handleNetworkChange = async (network: NetworkConfig | null) => {
+    console.log("network", network);
+    try {
+      if (network) {
+        setSelectedNetwork(network);
+        console.log("network", network);
+        const connections = getConnections(config);
+        console.log("connections", connections);
+        const result = await switchChain(config, {
+          chainId: network.chain.id,
+          connector: connections[0]?.connector,
+        });
+        console.log(result);
+      }
+    } catch (error) {
+      console.error(error);
     }
-  }, [chainId, selectedNetwork]);
+  };
 
   return (
     <main className="flex min-h-screen flex-col md:flex-row">

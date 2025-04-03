@@ -21,6 +21,7 @@ import {
   writeContract,
 } from "@wagmi/core";
 import { getBalance } from "@wagmi/core";
+
 interface AdminPanelProps {
   network: NetworkConfig;
   walletAddress: string;
@@ -32,6 +33,7 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
   const [contractBalance, setContractBalance] = useState("0");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState<"create" | "update" | null>(null);
+  // const [isClaiming, setIsClaiming] = useState(false);
 
   useEffect(() => {
     loadContractData();
@@ -87,6 +89,15 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
       setIsSaving(null);
       loadContractData();
     }
+  };
+
+  const claimBalance = async () => {
+    // const connections = getConnections(config);
+    // const result = await switchChain(config, {
+    //   chainId: arbitrum.id,
+    //   connector: connections[0]?.connector,
+    // });
+    // console.log(result, connections);
   };
 
   return (
@@ -184,6 +195,19 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
             </span>
           </div>
         </CardContent>
+        {/* <CardFooter>
+          <Button
+            onClick={claimBalance}
+            // disabled={isLoading || Number.parseFloat(contractBalance) === 0}
+            className="w-full"
+            variant={
+              Number.parseFloat(contractBalance) > 0 ? "default" : "outline"
+            }
+          >
+            <Coins className="mr-2 h-4 w-4" />
+            {isClaiming ? "Claiming..." : "Claim Balance"}
+          </Button>
+        </CardFooter> */}
       </Card>
     </div>
   );

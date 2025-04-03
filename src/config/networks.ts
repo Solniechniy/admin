@@ -41,7 +41,7 @@ export const networks: NetworkConfig[] = [
     chainId: "0x61",
     rpcUrl: "https://data-seed-prebsc-1-s1.binance.org:8545",
     blockExplorerUrl: "https://testnet.bscscan.com",
-    attestationContract: "0x3Dba2047c87E9Fa4e14D97Fa11De7f86C959844b", // Replace with actual contract address
+    attestationContract: "0x3Dba2047c87E9Fa4e14D97Fa11De7f86C959844b",
     nativeCurrency: bscTestnet.nativeCurrency,
   },
   {
@@ -51,7 +51,7 @@ export const networks: NetworkConfig[] = [
     chainId: "0x2105",
     rpcUrl: "https://mainnet.base.org",
     blockExplorerUrl: "https://basescan.org",
-    attestationContract: "0x1234567890123456789012345678901234567890", // Replace with actual contract address
+    attestationContract: "0x3eAE5566344e99A9D9c515332883Fd30b5184701",
     nativeCurrency: base.nativeCurrency,
   },
   {
@@ -71,7 +71,7 @@ export const networks: NetworkConfig[] = [
     chainId: "0x7a69",
     rpcUrl: "https://linea-rpc.com",
     blockExplorerUrl: "https://lineascan.io",
-    attestationContract: "0x1234567890123456789012345678901234567890", // Replace with actual contract address
+    attestationContract: "0x5AcF01D27F85DA54d34E18A25731f87528f97506",
     nativeCurrency: linea.nativeCurrency,
   },
   {
@@ -81,7 +81,7 @@ export const networks: NetworkConfig[] = [
     chainId: "0xa4b1",
     rpcUrl: "https://arb1.arbitrum.io/rpc",
     blockExplorerUrl: "https://arbiscan.io",
-    attestationContract: "0x1234567890123456789012345678901234567890", // Replace with actual contract address
+    attestationContract: "0xa87B3E7e3bBe0E721309119B610B32683b61db08",
     nativeCurrency: arbitrum.nativeCurrency,
   },
 ];
