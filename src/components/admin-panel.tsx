@@ -91,14 +91,15 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
     }
   };
 
-  const claimBalance = async () => {
-    // const connections = getConnections(config);
-    // const result = await switchChain(config, {
-    //   chainId: arbitrum.id,
-    //   connector: connections[0]?.connector,
-    // });
-    // console.log(result, connections);
-  };
+  // const claimBalance = async () => {
+  //   console.log("claimBalance");
+  //   // const connections = getConnections(config);
+  //   // const result = await switchChain(config, {
+  //   //   chainId: arbitrum.id,
+  //   //   connector: connections[0]?.connector,
+  //   // });
+  //   // console.log(result, connections);
+  // };
 
   return (
     <div className="space-y-6">

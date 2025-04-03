@@ -25,7 +25,6 @@ export default function App() {
         console.log("connections", connections);
         const result = await switchChain(config, {
           chainId: network.chain.id,
-          connector: connections[0]?.connector,
         });
         console.log(result);
       }
