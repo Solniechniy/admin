@@ -45,7 +45,7 @@ export default function App() {
             selectedNetwork={selectedNetwork}
           />
 
-          {selectedNetwork && <WalletConnector />}
+          {selectedNetwork && <WalletConnector network={selectedNetwork} />}
         </div>
       </div>
 

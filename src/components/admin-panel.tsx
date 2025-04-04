@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { formatEther, parseEther } from "ethers";
-import { Save, RefreshCw } from "lucide-react";
+import { formatEther } from "ethers";
+import { Save, RefreshCw, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,15 +12,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { NetworkConfig } from "@/config/networks";
-import { config } from "@/config/networks";
-import { hapiProtocolABI } from "@/config/evm-abi";
-import {
-  readContract,
-  waitForTransactionReceipt,
-  writeContract,
-} from "@wagmi/core";
-import { getBalance } from "@wagmi/core";
+import type { Network, NetworkConfig } from "@/config/networks";
+
+import useNetwork from "@/hooks/useNetwork";
 
 interface AdminPanelProps {
   network: NetworkConfig;
@@ -33,8 +27,9 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
   const [contractBalance, setContractBalance] = useState("0");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState<"create" | "update" | null>(null);
-  // const [isClaiming, setIsClaiming] = useState(false);
-
+  const [isClaiming, setIsClaiming] = useState(false);
+  const { getAttestationData, updateAttestationFee, withdrawBalance } =
+    useNetwork(network.id as Network);
   useEffect(() => {
     loadContractData();
   }, [network, walletAddress]);
@@ -42,23 +37,13 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
   const loadContractData = async () => {
     setIsLoading(true);
     try {
-      const updateAttestationFee = await readContract(config, {
-        abi: hapiProtocolABI,
-        address: network.attestationContract as `0x${string}`,
-        functionName: "updateAttestationFee",
-      });
-      const createAttestationFee = await readContract(config, {
-        abi: hapiProtocolABI,
-        address: network.attestationContract as `0x${string}`,
-        functionName: "createAttestationFee",
-      });
-
-      const balance = await getBalance(config, {
-        address: network.attestationContract as `0x${string}`,
-      });
-
-      setCreateFee(formatEther(updateAttestationFee));
-      setUpdateFee(formatEther(createAttestationFee));
+      const { updateFee, createFee, balance } = await getAttestationData();
+      console.log(updateFee, createFee, balance);
+      if (!updateFee || !createFee || !balance) {
+        throw new Error("No data found");
+      }
+      setCreateFee(formatEther(updateFee));
+      setUpdateFee(formatEther(createFee));
       setContractBalance(formatEther(balance.value));
     } catch (error) {
       console.error("Error loading contract data:", error);
@@ -70,19 +55,7 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
   const updateFees = async (type: "create" | "update", fee: string) => {
     setIsSaving(type);
     try {
-      const tx = await writeContract(config, {
-        abi: hapiProtocolABI,
-        address: network.attestationContract as `0x${string}`,
-        functionName:
-          type === "create"
-            ? "setCreateAttestationFee"
-            : "setUpdateAttestationFee",
-        args: [parseEther(fee)],
-      });
-      const txReceipt = await waitForTransactionReceipt(config, { hash: tx });
-      if (txReceipt.status === "success") {
-        alert("Fees updated successfully!");
-      }
+      await updateAttestationFee(fee, type);
     } catch (error) {
       console.error("Error updating fees:", error);
     } finally {
@@ -91,15 +64,17 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
     }
   };
 
-  // const claimBalance = async () => {
-  //   console.log("claimBalance");
-  //   // const connections = getConnections(config);
-  //   // const result = await switchChain(config, {
-  //   //   chainId: arbitrum.id,
-  //   //   connector: connections[0]?.connector,
-  //   // });
-  //   // console.log(result, connections);
-  // };
+  const claimBalance = async () => {
+    setIsClaiming(true);
+    try {
+      await withdrawBalance();
+    } catch (error) {
+      console.error("Error claiming balance:", error);
+    } finally {
+      setIsClaiming(false);
+      loadContractData();
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -198,10 +173,10 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
             </span>
           </div>
         </CardContent>
-        {/* <CardFooter>
+        <CardFooter>
           <Button
             onClick={claimBalance}
-            // disabled={isLoading || Number.parseFloat(contractBalance) === 0}
+            disabled={isLoading}
             className="w-full"
             variant={
               Number.parseFloat(contractBalance) > 0 ? "default" : "outline"
@@ -210,7 +185,7 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
             <Coins className="mr-2 h-4 w-4" />
             {isClaiming ? "Claiming..." : "Claim Balance"}
           </Button>
-        </CardFooter> */}
+        </CardFooter>
       </Card>
     </div>
   );

@@ -1,21 +1,24 @@
 import { ExternalLink } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { networks } from "@/config/networks";
-import { ConnectKitButton } from "connectkit";
-import { useAccount, useChainId } from "wagmi";
+import { Network, NetworkConfig, networks } from "@/config/networks";
 
-export function WalletConnector() {
+import { useAccount, useChainId } from "wagmi";
+import useNetwork from "@/hooks/useNetwork";
+
+export function WalletConnector({ network }: { network: NetworkConfig }) {
   const { isConnected } = useAccount();
   const chainId = useChainId();
+  const { connectWallet } = useNetwork(network.id as Network);
 
   const currentNetwork = networks.find((n) => n.chain.id === chainId);
+
   return (
     <div className="space-y-2">
       <h2 className="text-lg font-medium">Step 2: Connect Wallet</h2>
 
       {!isConnected ? (
-        <ConnectKitButton />
+        connectWallet()
       ) : (
         <Card>
           <CardContent className="p-4">
@@ -31,11 +34,11 @@ export function WalletConnector() {
                 <span className="text-sm font-medium">Address:</span>
                 <div className="flex items-center">
                   <span className="text-sm truncate max-w-[150px]">
-                    {currentNetwork?.attestationContract}
+                    {currentNetwork?.moduleContract}
                   </span>
                   {currentNetwork?.blockExplorerUrl && (
                     <a
-                      href={`${currentNetwork?.blockExplorerUrl}/address/${currentNetwork?.attestationContract}`}
+                      href={`${currentNetwork?.blockExplorerUrl}/address/${currentNetwork?.moduleContract}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="ml-1"

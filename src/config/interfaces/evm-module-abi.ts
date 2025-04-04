@@ -1,4 +1,4 @@
-export const hapiProtocolABI = [
+export const evmModuleABI = [
   {
     inputs: [],
     name: "ECDSAInvalidSignature",
@@ -409,4 +409,4 @@ export const hapiProtocolABI = [
   },
 ] as const;
 
-export default hapiProtocolABI;
+export default evmModuleABI;
