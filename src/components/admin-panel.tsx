@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { formatEther } from "ethers";
 import { Save, RefreshCw, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
