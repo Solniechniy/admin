@@ -6,6 +6,7 @@ import { arbitrum, base, bsc, Chain, linea } from "wagmi/chains";
 export enum Network {
   BASE = "base",
   BSC = "bsc",
+  BSC_TESTNET = "bsc-testnet",
   LINEA = "linea",
   ARBITRUM = "arbitrum",
   NEAR = "near",
@@ -43,6 +44,17 @@ export const config = createConfig(
 );
 
 export const networks: NetworkConfig[] = [
+  {
+    id: Network.BSC_TESTNET,
+    chain: bsc,
+    name: "BSC Testnet",
+    chainId: "0x61",
+    rpcUrl: "https://data-seed-prebsc-1-s1.binance.org:8545",
+    blockExplorerUrl: "https://testnet.bscscan.com",
+    moduleContract: "0x3Dba2047c87E9Fa4e14D97Fa11De7f86C959844b",
+    portalContract: "0x838D82F110F5bdc23732C7Acab5949D067594C39",
+    nativeCurrency: bsc.nativeCurrency,
+  },
   {
     id: Network.BASE,
     chain: base,

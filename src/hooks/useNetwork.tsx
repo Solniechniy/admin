@@ -20,6 +20,7 @@ const useNetwork = (network: Network) => {
         case Network.BSC:
         case Network.LINEA:
         case Network.ARBITRUM:
+        case Network.BSC_TESTNET:
           return <ConnectKitButton />;
         default:
           throw new Error("Network not supported");
@@ -38,6 +39,7 @@ const useNetwork = (network: Network) => {
         case Network.BSC:
         case Network.LINEA:
         case Network.ARBITRUM:
+        case Network.BSC_TESTNET:
           const networkConfig = networks.find(
             (n) => n.id === network
           ) as NetworkConfig;
@@ -64,6 +66,7 @@ const useNetwork = (network: Network) => {
         case Network.BSC:
         case Network.LINEA:
         case Network.ARBITRUM:
+        case Network.BSC_TESTNET:
           const networkConfig = networks.find(
             (n) => n.id === network
           ) as NetworkConfig;
@@ -98,6 +101,7 @@ const useNetwork = (network: Network) => {
         case Network.BSC:
         case Network.LINEA:
         case Network.ARBITRUM:
+        case Network.BSC_TESTNET:
           const networkConfig = networks.find(
             (n) => n.id === network
           ) as NetworkConfig;
