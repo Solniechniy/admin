@@ -1,7 +1,15 @@
 import { getDefaultConfig } from "connectkit";
 import { http, createConfig } from "wagmi";
 
-import { arbitrum, base, bsc, Chain, linea } from "wagmi/chains";
+import {
+  arbitrum,
+  base,
+  bsc,
+  bscTestnet,
+  Chain,
+  linea,
+  near,
+} from "wagmi/chains";
 
 export enum Network {
   BASE = "base",
@@ -13,6 +21,19 @@ export enum Network {
   TON = "ton",
 }
 
+export const selectNetworks = [
+  {
+    id: Network.NEAR,
+    name: "Near",
+  },
+  { id: Network.TON, name: "Ton" },
+  { id: Network.BASE, name: "Base" },
+  { id: Network.BSC, name: "BSC" },
+  { id: Network.BSC_TESTNET, name: "BSC Testnet" },
+  { id: Network.LINEA, name: "Linea" },
+  { id: Network.ARBITRUM, name: "Arbitrum" },
+];
+
 export interface NetworkConfig {
   id: string;
   name: string;
@@ -20,8 +41,9 @@ export interface NetworkConfig {
   chainId: string;
   rpcUrl: string;
   blockExplorerUrl?: string;
-  moduleContract: string;
-  portalContract: string;
+  moduleContract: string | null;
+  portalContract: string | null;
+  attestationContract?: string | null;
   nativeCurrency: {
     name: string;
     symbol: string;
@@ -31,12 +53,13 @@ export interface NetworkConfig {
 
 export const config = createConfig(
   getDefaultConfig({
-    chains: [base, bsc, linea, arbitrum],
+    chains: [base, bsc, bscTestnet, linea, arbitrum],
     walletConnectProjectId: "27139bc332476e5706ee928fa5b8ee10",
     appName: "Attestation Admin",
     transports: {
       [base.id]: http(),
       [bsc.id]: http(),
+      [bscTestnet.id]: http(),
       [linea.id]: http(),
       [arbitrum.id]: http(),
     },
@@ -51,9 +74,9 @@ export const networks: NetworkConfig[] = [
     chainId: "0x61",
     rpcUrl: "https://data-seed-prebsc-1-s1.binance.org:8545",
     blockExplorerUrl: "https://testnet.bscscan.com",
-    moduleContract: "0x3Dba2047c87E9Fa4e14D97Fa11De7f86C959844b",
-    portalContract: "0x838D82F110F5bdc23732C7Acab5949D067594C39",
-    nativeCurrency: bsc.nativeCurrency,
+    moduleContract: "0x3dba2047c87e9fa4e14d97fa11de7f86c959844b",
+    portalContract: "0x838d82f110f5bdc23732c7acab5949d067594c39",
+    nativeCurrency: bscTestnet.nativeCurrency,
   },
   {
     id: Network.BASE,
@@ -98,5 +121,21 @@ export const networks: NetworkConfig[] = [
     moduleContract: "0xa87B3E7e3bBe0E721309119B610B32683b61db08",
     portalContract: "0x96b3B714A4339b12725f1AFefd6BD844F7b40A30",
     nativeCurrency: arbitrum.nativeCurrency,
+  },
+  {
+    id: Network.NEAR,
+    chain: near,
+    name: "Near Mainnet",
+    chainId: "0x1",
+    rpcUrl: "https://rpc.mainnet.near.org",
+    blockExplorerUrl: "https://nearblocks.io",
+    moduleContract: null,
+    portalContract: null,
+    attestationContract: "score-v1.hapiprotocol.near",
+    nativeCurrency: {
+      decimals: 24,
+      name: "NEAR",
+      symbol: "NEAR",
+    },
   },
 ];

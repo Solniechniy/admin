@@ -2,18 +2,20 @@ import { useState } from "react";
 import { NetworkSelector } from "@/components/network-selector";
 import { WalletConnector } from "@/components/wallet-connector";
 import { AdminPanel } from "@/components/admin-panel";
-import type { NetworkConfig } from "@/config/networks";
+import type { Network, NetworkConfig } from "@/config/networks";
 import { useAccount } from "wagmi";
 
 import { config } from "@/config/networks";
 import { getConnections, switchChain } from "@wagmi/core";
+import useNetwork from "./hooks/useNetwork";
 
 export default function App() {
   const [selectedNetwork, setSelectedNetwork] = useState<NetworkConfig | null>(
     null
   );
 
-  const { address, isConnected } = useAccount();
+  const { address } = useAccount();
+  const { isConnected } = useNetwork(selectedNetwork?.id as Network);
 
   const handleNetworkChange = async (network: NetworkConfig | null) => {
     console.log("network", network);
@@ -51,7 +53,7 @@ export default function App() {
 
       {/* Right Panel - Admin Controls */}
       <div className="w-full md:w-1/2 p-6">
-        {isConnected && selectedNetwork ? (
+        {isConnected() && selectedNetwork ? (
           <AdminPanel network={selectedNetwork} walletAddress={address!} />
         ) : (
           <div className="h-full flex items-center justify-center">

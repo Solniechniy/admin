@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import type { Network, NetworkConfig } from "@/config/networks";
 
 import useNetwork from "@/hooks/useNetwork";
+import { formatTokenAmount } from "@/lib/utils";
 
 interface AdminPanelProps {
   network: NetworkConfig;
@@ -30,6 +31,7 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
   const [isClaiming, setIsClaiming] = useState(false);
   const { getAttestationData, updateAttestationFee, withdrawBalance } =
     useNetwork(network.id as Network);
+
   useEffect(() => {
     loadContractData();
   }, [network, walletAddress]);
@@ -37,14 +39,21 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
   const loadContractData = async () => {
     setIsLoading(true);
     try {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       const { updateFee, createFee, balance } = await getAttestationData();
-      console.log(updateFee, createFee, balance);
+
       if (!updateFee || !createFee || !balance) {
         throw new Error("No data found");
       }
-      setCreateFee(formatEther(updateFee));
-      setUpdateFee(formatEther(createFee));
-      setContractBalance(formatEther(balance.value));
+      setCreateFee(
+        formatTokenAmount(updateFee, network.nativeCurrency.decimals)
+      );
+      setUpdateFee(
+        formatTokenAmount(createFee, network.nativeCurrency.decimals)
+      );
+      setContractBalance(
+        formatTokenAmount(balance, network.nativeCurrency.decimals, 3)
+      );
     } catch (error) {
       console.error("Error loading contract data:", error);
     } finally {
