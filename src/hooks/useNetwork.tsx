@@ -21,7 +21,7 @@ const useNetwork = (network: Network) => {
     useWalletSelector();
   const { isConnected } = useAccount();
   const { selector } = useWalletSelector();
-  console.log(selector);
+
   const networkConfig = networks.find((n) => n.id === network) as NetworkConfig;
   const [isNearConnected, setIsNearConnected] = useState(false);
 
@@ -29,9 +29,7 @@ const useNetwork = (network: Network) => {
     if (selector) {
       try {
         const wallet = await selector.wallet();
-        console.log("wallet", wallet);
         const accounts = await wallet?.getAccounts();
-        console.log("accounts", accounts);
         setIsNearConnected(accounts && accounts.length > 0);
       } catch (e) {
         console.warn("Error updating near connected", e);
@@ -54,7 +52,6 @@ const useNetwork = (network: Network) => {
         case Network.BSC_TESTNET:
           return isConnected;
         case Network.NEAR:
-          console.log("isNearConnected", isNearConnected);
           return isNearConnected;
         default:
           return false;
@@ -155,7 +152,7 @@ const useNetwork = (network: Network) => {
           });
 
           return {
-            balance: balance,
+            balance: balance.value,
             updateFee: updateAttestationFee,
             createFee: createAttestationFee,
           };
