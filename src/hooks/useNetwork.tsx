@@ -140,7 +140,6 @@ const useNetwork = (network: Network) => {
           if (!networkConfig?.attestationContract) {
             throw new Error("Attestation contract not found");
           }
-          console.log("really here near");
           const prices = await RPCProvider.viewFunction(
             "get_prices",
             networkConfig.attestationContract
@@ -148,7 +147,6 @@ const useNetwork = (network: Network) => {
           const near_balance = await RPCProvider.viewAccount(
             networkConfig.attestationContract
           );
-          console.log(prices, near_balance);
           return {
             balance: near_balance.amount,
             updateFee: prices[0],
@@ -158,7 +156,10 @@ const useNetwork = (network: Network) => {
           throw new Error("Network not supported");
       }
     },
-    withdrawBalance: async () => {
+    withdrawBalance: async (
+      address: `0x${string}` | string,
+      amount: string
+    ) => {
       switch (network) {
         case Network.BASE:
         case Network.BSC:
@@ -173,13 +174,19 @@ const useNetwork = (network: Network) => {
             abi: evmPortalABI,
             address: networkConfig.portalContract as `0x${string}`,
             functionName: "withdraw",
-            args: [],
+            args: [
+              address,
+              parseTokenAmount(amount, networkConfig.nativeCurrency.decimals),
+            ],
           });
 
           const tx = await waitForTransactionReceipt(config, {
             hash: withdrawBalance,
           });
           return tx;
+
+        case Network.NEAR:
+          throw new Error("Attestation method still not implemented");
       }
     },
   };

@@ -87,7 +87,7 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
   const claimBalance = async () => {
     setIsClaiming(true);
     try {
-      await withdrawBalance();
+      await withdrawBalance(withdrawAddress, contractBalance);
     } catch (error) {
       console.error("Error claiming balance:", error);
     } finally {
@@ -195,9 +195,8 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
         </CardContent>
         <CardFooter>
           <Dialog>
-            <DialogTrigger>
+            <DialogTrigger asChild>
               <Button
-                onClick={claimBalance}
                 disabled={isLoading}
                 className="w-full"
                 variant={
@@ -212,7 +211,7 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
               <DialogHeader>
                 <DialogTitle>Comission Withdraw</DialogTitle>
               </DialogHeader>
-              <DialogDescription>
+              <DialogDescription asChild>
                 <div className="space-y-2">
                   <Label htmlFor="createFee">Address</Label>
                   <Input
@@ -226,7 +225,7 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
               </DialogDescription>
               <DialogFooter>
                 <Button
-                  onClick={withdrawBalance}
+                  onClick={claimBalance}
                   disabled={isLoading}
                   className="w-full"
                   variant={

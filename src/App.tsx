@@ -6,7 +6,7 @@ import type { Network, NetworkConfig } from "@/config/networks";
 import { useAccount } from "wagmi";
 
 import { config } from "@/config/networks";
-import { getConnections, switchChain } from "@wagmi/core";
+import { switchChain } from "@wagmi/core";
 import useNetwork from "./hooks/useNetwork";
 
 export default function App() {
@@ -18,17 +18,12 @@ export default function App() {
   const { isConnected } = useNetwork(selectedNetwork?.id as Network);
 
   const handleNetworkChange = async (network: NetworkConfig | null) => {
-    console.log("network", network);
     try {
       if (network) {
         setSelectedNetwork(network);
-        console.log("network", network);
-        const connections = getConnections(config);
-        console.log("connections", connections);
-        const result = await switchChain(config, {
+        await switchChain(config, {
           chainId: network.chain.id,
         });
-        console.log(result);
       }
     } catch (error) {
       console.error(error);
