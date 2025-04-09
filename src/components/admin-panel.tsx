@@ -9,9 +9,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+
 import type { Network, NetworkConfig } from "@/config/networks";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 
 import useNetwork from "@/hooks/useNetwork";
 import { formatTokenAmount } from "@/lib/utils";
@@ -30,6 +40,8 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
   const [isClaiming, setIsClaiming] = useState(false);
   const { getAttestationData, updateAttestationFee, withdrawBalance } =
     useNetwork(network.id as Network);
+
+  const [withdrawAddress, setWithdrawAddress] = useState("");
 
   useEffect(() => {
     loadContractData();
@@ -182,17 +194,53 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
           </div>
         </CardContent>
         <CardFooter>
-          <Button
-            onClick={claimBalance}
-            disabled={isLoading}
-            className="w-full"
-            variant={
-              Number.parseFloat(contractBalance) > 0 ? "default" : "outline"
-            }
-          >
-            <Coins className="mr-2 h-4 w-4" />
-            {isClaiming ? "Claiming..." : "Claim Balance"}
-          </Button>
+          <Dialog>
+            <DialogTrigger>
+              <Button
+                onClick={claimBalance}
+                disabled={isLoading}
+                className="w-full"
+                variant={
+                  Number.parseFloat(contractBalance) > 0 ? "default" : "outline"
+                }
+              >
+                <Coins className="mr-2 h-4 w-4" />
+                {isClaiming ? "Claiming..." : "Claim Balance"}
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Comission Withdraw</DialogTitle>
+              </DialogHeader>
+              <DialogDescription>
+                <div className="space-y-2">
+                  <Label htmlFor="createFee">Address</Label>
+                  <Input
+                    id="createFee"
+                    type="text"
+                    value={withdrawAddress}
+                    onChange={(e) => setWithdrawAddress(e.target.value)}
+                    placeholder="0x1234567890123456789012345678901234567890"
+                  />
+                </div>
+              </DialogDescription>
+              <DialogFooter>
+                <Button
+                  onClick={withdrawBalance}
+                  disabled={isLoading}
+                  className="w-full"
+                  variant={
+                    Number.parseFloat(contractBalance) > 0
+                      ? "default"
+                      : "outline"
+                  }
+                >
+                  <Coins className="mr-2 h-4 w-4" />
+                  {"Withdraw"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </CardFooter>
       </Card>
     </div>

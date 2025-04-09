@@ -1,15 +1,7 @@
 import { getDefaultConfig } from "connectkit";
 import { http, createConfig } from "wagmi";
 
-import {
-  arbitrum,
-  base,
-  bsc,
-  bscTestnet,
-  Chain,
-  linea,
-  near,
-} from "wagmi/chains";
+import { arbitrum, base, bsc, Chain, linea, near } from "wagmi/chains";
 
 export enum Network {
   BASE = "base",
@@ -20,19 +12,6 @@ export enum Network {
   NEAR = "near",
   TON = "ton",
 }
-
-export const selectNetworks = [
-  {
-    id: Network.NEAR,
-    name: "Near",
-  },
-  { id: Network.TON, name: "Ton" },
-  { id: Network.BASE, name: "Base" },
-  { id: Network.BSC, name: "BSC" },
-  { id: Network.BSC_TESTNET, name: "BSC Testnet" },
-  { id: Network.LINEA, name: "Linea" },
-  { id: Network.ARBITRUM, name: "Arbitrum" },
-];
 
 export interface NetworkConfig {
   id: string;
@@ -53,13 +32,12 @@ export interface NetworkConfig {
 
 export const config = createConfig(
   getDefaultConfig({
-    chains: [base, bsc, bscTestnet, linea, arbitrum],
+    chains: [base, bsc, linea, arbitrum],
     walletConnectProjectId: "27139bc332476e5706ee928fa5b8ee10",
     appName: "Attestation Admin",
     transports: {
       [base.id]: http(),
       [bsc.id]: http(),
-      [bscTestnet.id]: http(),
       [linea.id]: http(),
       [arbitrum.id]: http(),
     },
@@ -67,17 +45,17 @@ export const config = createConfig(
 );
 
 export const networks: NetworkConfig[] = [
-  {
-    id: Network.BSC_TESTNET,
-    chain: bsc,
-    name: "BSC Testnet",
-    chainId: "0x61",
-    rpcUrl: "https://data-seed-prebsc-1-s1.binance.org:8545",
-    blockExplorerUrl: "https://testnet.bscscan.com",
-    moduleContract: "0x3dba2047c87e9fa4e14d97fa11de7f86c959844b",
-    portalContract: "0x838d82f110f5bdc23732c7acab5949d067594c39",
-    nativeCurrency: bscTestnet.nativeCurrency,
-  },
+  // {
+  //   id: Network.BSC_TESTNET,
+  //   chain: bsc,
+  //   name: "BSC Testnet",
+  //   chainId: "0x61",
+  //   rpcUrl: "https://data-seed-prebsc-1-s1.binance.org:8545",
+  //   blockExplorerUrl: "https://testnet.bscscan.com",
+  //   moduleContract: "0x3dba2047c87e9fa4e14d97fa11de7f86c959844b",
+  //   portalContract: "0x838d82f110f5bdc23732c7acab5949d067594c39",
+  //   nativeCurrency: bscTestnet.nativeCurrency,
+  // },
   {
     id: Network.BASE,
     chain: base,
