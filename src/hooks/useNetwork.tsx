@@ -169,8 +169,8 @@ const useNetwork = (network: Network) => {
           );
           return {
             balance: near_balance.amount,
-            updateFee: prices[0],
-            createFee: prices[1],
+            updateFee: prices[1],
+            createFee: prices[0],
           };
         default:
           throw new Error("Network not supported");
