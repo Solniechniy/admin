@@ -57,10 +57,10 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
         throw new Error("No data found");
       }
       setCreateFee(
-        formatTokenAmount(updateFee, network.nativeCurrency.decimals)
+        formatTokenAmount(createFee, network.nativeCurrency.decimals)
       );
       setUpdateFee(
-        formatTokenAmount(createFee, network.nativeCurrency.decimals)
+        formatTokenAmount(updateFee, network.nativeCurrency.decimals)
       );
       setContractBalance(
         formatTokenAmount(balance, network.nativeCurrency.decimals, 3)
