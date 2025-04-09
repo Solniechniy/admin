@@ -96,7 +96,7 @@ const NETWORK_ID = "mainnet";
 
 interface WalletSelectorContextValue {
   openModal: () => void;
-  isSignedIn: () => boolean;
+  selector: WalletSelector | null;
   requestSignTransactions: (
     t: ITransaction[]
   ) => Promise<void | FinalExecutionOutcome[]>;
@@ -195,10 +195,6 @@ export const WalletSelectorContextProvider = ({
     return () => subscription.unsubscribe();
   }, [selector, accountId]);
 
-  const isSignedIn = useCallback(
-    () => (selector && selector.isSignedIn()) || false,
-    [selector]
-  );
   const requestSignTransactions = useCallback(
     async (transactions: ITransaction[]) => {
       if (!selector) return console.warn("No wallet selected");
@@ -254,7 +250,7 @@ export const WalletSelectorContextProvider = ({
   return (
     <WalletSelectorContext.Provider
       value={{
-        isSignedIn,
+        selector,
         accountId,
         openModal,
         requestSignTransactions,

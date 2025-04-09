@@ -14,13 +14,35 @@ import evmPortalABI from "@/config/interfaces/evm-portal-abi";
 import { useWalletSelector } from "@/provider/near-provider";
 import { useAccount } from "wagmi";
 import { parseTokenAmount } from "@/lib/utils";
+import { useEffect, useState } from "react";
 
 const useNetwork = (network: Network) => {
   const { openModal, RPCProvider, requestSignTransactions } =
     useWalletSelector();
   const { isConnected } = useAccount();
-  const { isSignedIn } = useWalletSelector();
+  const { selector } = useWalletSelector();
+  console.log(selector);
   const networkConfig = networks.find((n) => n.id === network) as NetworkConfig;
+  const [isNearConnected, setIsNearConnected] = useState(false);
+
+  const updateIsNearConnected = async () => {
+    if (selector) {
+      try {
+        const wallet = await selector.wallet();
+        console.log("wallet", wallet);
+        const accounts = await wallet?.getAccounts();
+        console.log("accounts", accounts);
+        setIsNearConnected(accounts && accounts.length > 0);
+      } catch (e) {
+        console.warn("Error updating near connected", e);
+        setIsNearConnected(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    updateIsNearConnected();
+  }, [updateIsNearConnected, selector]);
 
   return {
     isConnected: () => {
@@ -32,7 +54,8 @@ const useNetwork = (network: Network) => {
         case Network.BSC_TESTNET:
           return isConnected;
         case Network.NEAR:
-          return isSignedIn;
+          console.log("isNearConnected", isNearConnected);
+          return isNearConnected;
         default:
           return false;
       }
