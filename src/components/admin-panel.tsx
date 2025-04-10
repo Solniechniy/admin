@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Save, RefreshCw, Coins } from "lucide-react";
+import { Save, RefreshCw, Coins, TriangleAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -42,7 +42,7 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
     useNetwork(network.id as Network);
 
   const [withdrawAddress, setWithdrawAddress] = useState("");
-
+  const [withdrawAmount, setWithdrawAmount] = useState("");
   useEffect(() => {
     loadContractData();
   }, [network, walletAddress]);
@@ -87,7 +87,7 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
   const claimBalance = async () => {
     setIsClaiming(true);
     try {
-      await withdrawBalance(withdrawAddress, contractBalance);
+      await withdrawBalance(withdrawAddress, withdrawAmount);
     } catch (error) {
       console.error("Error claiming balance:", error);
     } finally {
@@ -212,15 +212,46 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
                 <DialogTitle>Comission Withdraw</DialogTitle>
               </DialogHeader>
               <DialogDescription asChild>
-                <div className="space-y-2">
-                  <Label htmlFor="createFee">Address</Label>
-                  <Input
-                    id="createFee"
-                    type="text"
-                    value={withdrawAddress}
-                    onChange={(e) => setWithdrawAddress(e.target.value)}
-                    placeholder="0x1234567890123456789012345678901234567890"
-                  />
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="createFee"
+                      className="text-sm font-bold text-black"
+                    >
+                      Address
+                    </Label>
+                    <Input
+                      id="createFee"
+                      type="text"
+                      value={withdrawAddress}
+                      onChange={(e) => setWithdrawAddress(e.target.value)}
+                      placeholder="0x1234567890123456789012345678901234567890"
+                    />
+                    <p className="text-xs text-gray-500 flex items-center">
+                      <TriangleAlert className="mr-2 h-4 w-4" />
+                      EVM network withdraw only to owner account
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="amount"
+                      className="text-sm font-bold text-black"
+                    >
+                      Amount
+                    </Label>
+                    <Input
+                      id="amount"
+                      type="number"
+                      value={withdrawAmount}
+                      onChange={(e) => setWithdrawAmount(e.target.value)}
+                      placeholder="0.01"
+                    />
+                    <p className="text-xs text-gray-500 flex items-center">
+                      <TriangleAlert className="mr-2 h-4 w-4" />
+                      NEAR contract should have additional NEAR on balance to
+                      operate
+                    </p>
+                  </div>
                 </div>
               </DialogDescription>
               <DialogFooter>

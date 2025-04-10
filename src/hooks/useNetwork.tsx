@@ -186,10 +186,6 @@ const useNetwork = (network: Network) => {
         case Network.LINEA:
         case Network.ARBITRUM:
         case Network.BSC_TESTNET:
-          const networkConfig = networks.find(
-            (n) => n.id === network
-          ) as NetworkConfig;
-
           const withdrawBalance = await writeContract(config, {
             abi: evmPortalABI,
             address: networkConfig.portalContract as `0x${string}`,
@@ -206,7 +202,26 @@ const useNetwork = (network: Network) => {
           return tx;
 
         case Network.NEAR:
-          throw new Error("Attestation method still not implemented");
+          if (!networkConfig?.attestationContract) {
+            throw new Error("Attestation contract not found");
+          }
+          await requestSignTransactions([
+            {
+              receiverId: networkConfig.attestationContract,
+              functionCalls: [
+                {
+                  methodName: "withdraw",
+                  args: [
+                    parseTokenAmount(
+                      amount,
+                      networkConfig.nativeCurrency.decimals
+                    ),
+                    address,
+                  ],
+                },
+              ],
+            },
+          ]);
       }
     },
   };
