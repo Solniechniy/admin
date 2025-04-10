@@ -13,8 +13,6 @@ import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   NATIVE_MINT,
   TOKEN_PROGRAM_ID,
-  closeAccount,
-  createAccount,
   createAssociatedTokenAccountInstruction,
   createCloseAccountInstruction,
   getAccount,
