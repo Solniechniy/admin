@@ -21,9 +21,11 @@ export default function App() {
     try {
       if (network) {
         setSelectedNetwork(network);
-        await switchChain(config, {
-          chainId: network.chain.id,
-        });
+        if (network.chain) {
+          await switchChain(config, {
+            chainId: network.chain.id,
+          });
+        }
       }
     } catch (error) {
       console.error(error);

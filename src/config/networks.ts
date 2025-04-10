@@ -1,7 +1,7 @@
 import { getDefaultConfig } from "connectkit";
 import { http, createConfig } from "wagmi";
 
-import { arbitrum, base, bsc, Chain, linea, near } from "wagmi/chains";
+import { arbitrum, base, bsc, Chain, linea } from "wagmi/chains";
 
 export enum Network {
   BASE = "base",
@@ -10,13 +10,14 @@ export enum Network {
   LINEA = "linea",
   ARBITRUM = "arbitrum",
   NEAR = "near",
+  SOLANA = "solana",
   TON = "ton",
 }
 
 export interface NetworkConfig {
-  id: string;
+  id: Network;
   name: string;
-  chain: Chain;
+  chain?: Chain;
   chainId: string;
   rpcUrl: string;
   blockExplorerUrl?: string;
@@ -102,7 +103,6 @@ export const networks: NetworkConfig[] = [
   },
   {
     id: Network.NEAR,
-    chain: near,
     name: "Near Mainnet",
     chainId: "0x1",
     rpcUrl: "https://rpc.mainnet.near.org",
@@ -116,4 +116,24 @@ export const networks: NetworkConfig[] = [
       symbol: "NEAR",
     },
   },
+  {
+    id: Network.SOLANA,
+    name: "Solana Mainnet",
+    chainId: "0x1",
+    rpcUrl:
+      "https://mainnet.helius-rpc.com/?api-key=e5134d0c-9f20-48b6-ada5-33583b7f78fc",
+    moduleContract: null,
+    portalContract: null,
+    attestationContract: "4LAmGSWFTqnzNif9745G2W9u4R84Anr7pw4jF2wssGgp",
+    nativeCurrency: {
+      decimals: 9,
+      name: "SOL",
+      symbol: "SOL",
+    },
+  },
 ];
+
+export const networksMap = networks.reduce((acc, network) => {
+  acc[network.id as Network] = network;
+  return acc;
+}, {} as Record<Network, NetworkConfig>);

@@ -9,6 +9,7 @@ import { ConnectKitProvider } from "connectkit";
 import { WalletSelectorContextProvider } from "./provider/near-provider.tsx";
 import { WalletSelectorModal } from "@near-wallet-selector/modal-ui";
 import { WalletSelector } from "@near-wallet-selector/core";
+import { SolanaProvider } from "./provider/solana-provider.tsx";
 
 const queryClient = new QueryClient();
 
@@ -21,14 +22,16 @@ declare global {
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <WagmiProvider config={config}>
-      <WalletSelectorContextProvider>
-        <QueryClientProvider client={queryClient}>
-          <ConnectKitProvider>
-            <App />
-          </ConnectKitProvider>
-        </QueryClientProvider>
-      </WalletSelectorContextProvider>
-    </WagmiProvider>
+    <SolanaProvider>
+      <WagmiProvider config={config}>
+        <WalletSelectorContextProvider>
+          <QueryClientProvider client={queryClient}>
+            <ConnectKitProvider>
+              <App />
+            </ConnectKitProvider>
+          </QueryClientProvider>
+        </WalletSelectorContextProvider>
+      </WagmiProvider>
+    </SolanaProvider>
   </StrictMode>
 );

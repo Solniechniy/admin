@@ -1,14 +1,14 @@
 import { ExternalLink } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Network, NetworkConfig, networks } from "@/config/networks";
+import { Network, NetworkConfig, networksMap } from "@/config/networks";
 
 import useNetwork from "@/hooks/useNetwork";
 
 export function WalletConnector({ network }: { network: NetworkConfig }) {
   const { connectWallet, isConnected } = useNetwork(network.id as Network);
 
-  const currentNetwork = networks.find((n) => n.chain.id === network.chain.id);
+  const currentNetwork = networksMap[network.id as Network];
 
   return (
     <div className="space-y-2">

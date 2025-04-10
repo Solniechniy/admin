@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Save, RefreshCw, Coins, TriangleAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import type { Network, NetworkConfig } from "@/config/networks";
+import { Network, NetworkConfig } from "@/config/networks";
 import {
   Dialog,
   DialogContent,
@@ -30,6 +30,25 @@ interface AdminPanelProps {
   network: NetworkConfig;
   walletAddress: string;
 }
+
+const getWarningMessage = (network: Network) => {
+  switch (network) {
+    case Network.SOLANA:
+      return {
+        amount: "Solana withdraw mechanism take all balance from contract",
+      };
+
+    case Network.NEAR: {
+      return {
+        amount: `NEAR contract should have additional NEAR on balance to operate`,
+      };
+    }
+    default:
+      return {
+        account: "EVM network withdraw only to owner account",
+      };
+  }
+};
 
 export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
   const [createFee, setCreateFee] = useState("");
@@ -95,6 +114,11 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
       loadContractData();
     }
   };
+
+  const warningMessage = useMemo(
+    () => getWarningMessage(network.id),
+    [network]
+  );
 
   return (
     <div className="space-y-6">
@@ -227,10 +251,12 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
                       onChange={(e) => setWithdrawAddress(e.target.value)}
                       placeholder="0x1234567890123456789012345678901234567890"
                     />
-                    <p className="text-xs text-gray-500 flex items-center">
-                      <TriangleAlert className="mr-2 h-4 w-4" />
-                      EVM network withdraw only to owner account
-                    </p>
+                    {warningMessage?.account && (
+                      <p className="text-xs text-gray-500 flex items-center">
+                        <TriangleAlert className="mr-2 h-4 w-4" />
+                        {warningMessage.account}
+                      </p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label
@@ -246,11 +272,12 @@ export function AdminPanel({ network, walletAddress }: AdminPanelProps) {
                       onChange={(e) => setWithdrawAmount(e.target.value)}
                       placeholder="0.01"
                     />
-                    <p className="text-xs text-gray-500 flex items-center">
-                      <TriangleAlert className="mr-2 h-4 w-4" />
-                      NEAR contract should have additional NEAR on balance to
-                      operate
-                    </p>
+                    {warningMessage?.amount && (
+                      <p className="text-xs text-gray-500 flex items-center">
+                        <TriangleAlert className="mr-2 h-4 w-4" />
+                        {warningMessage.amount}
+                      </p>
+                    )}
                   </div>
                 </div>
               </DialogDescription>

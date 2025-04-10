@@ -1,11 +1,12 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 
-import { map, distinctUntilChanged } from "rxjs";
+import { map, distinctUntilChanged } from "rxjs/operators";
 import {
   FinalExecutionOutcome,
   NetworkId,
   setupWalletSelector,
   Transaction,
+  WalletSelectorState,
 } from "@near-wallet-selector/core";
 import type { WalletSelector, AccountState } from "@near-wallet-selector/core";
 import { setupModal } from "@near-wallet-selector/modal-ui";
@@ -179,15 +180,12 @@ export const WalletSelectorContextProvider = ({
       return;
     }
 
-    const subscription = selector.store.observable
+    const subscription = (selector.store.observable as any)
       .pipe(
-        map((state: any) => {
-          const result = state.accounts;
-          return result;
-        }),
+        map((state: WalletSelectorState) => state.accounts),
         distinctUntilChanged()
       )
-      .subscribe((nextAccounts: any) => {
+      .subscribe((nextAccounts: AccountState[]) => {
         syncAccountState(accountId, nextAccounts);
       });
 

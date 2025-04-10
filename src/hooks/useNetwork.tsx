@@ -1,4 +1,4 @@
-import { NetworkConfig, networks } from "@/config/networks";
+import { NetworkConfig, networks, networksMap } from "@/config/networks";
 
 import hapiProtocolABI from "@/config/interfaces/evm-module-abi";
 import { config, Network } from "@/config/networks";
@@ -15,15 +15,32 @@ import { useWalletSelector } from "@/provider/near-provider";
 import { useAccount } from "wagmi";
 import { parseTokenAmount } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import {
+  useAnchorWallet,
+  useConnection,
+  useWallet,
+} from "@solana/wallet-adapter-react";
+import { AttestationProgram } from "@/provider/solana-provider";
+import { Wallet } from "@coral-xyz/anchor";
 
+import { getAssociatedTokenAddressSync, NATIVE_MINT } from "@solana/spl-token";
 const useNetwork = (network: Network) => {
   const { openModal, RPCProvider, requestSignTransactions } =
     useWalletSelector();
   const { isConnected } = useAccount();
   const { selector } = useWalletSelector();
-
+  const { publicKey } = useWallet();
   const networkConfig = networks.find((n) => n.id === network) as NetworkConfig;
   const [isNearConnected, setIsNearConnected] = useState(false);
+  const { connection } = useConnection();
+  const wallet = useAnchorWallet();
+
+  const attestationAdaptor = new AttestationProgram(
+    connection,
+    wallet as Wallet,
+    networksMap[Network.SOLANA].attestationContract as string
+  );
 
   const updateIsNearConnected = async () => {
     if (selector) {
@@ -53,6 +70,8 @@ const useNetwork = (network: Network) => {
           return isConnected;
         case Network.NEAR:
           return isNearConnected;
+        case Network.SOLANA:
+          return Boolean(publicKey);
         default:
           return false;
       }
@@ -67,6 +86,8 @@ const useNetwork = (network: Network) => {
           return <ConnectKitButton />;
         case Network.NEAR:
           return <button onClick={openModal}>Connect</button>;
+        case Network.SOLANA:
+          return <WalletMultiButton />;
         default:
           throw new Error("Network not supported");
       }
@@ -108,7 +129,7 @@ const useNetwork = (network: Network) => {
             networkConfig.attestationContract
           );
 
-          await requestSignTransactions([
+          return await requestSignTransactions([
             {
               receiverId: networkConfig.attestationContract,
               functionCalls: [
@@ -126,6 +147,7 @@ const useNetwork = (network: Network) => {
               ],
             },
           ]);
+        case Network.SOLANA:
       }
     },
     getAttestationData: async () => {
@@ -171,6 +193,20 @@ const useNetwork = (network: Network) => {
             balance: near_balance.amount,
             updateFee: prices[1],
             createFee: prices[0],
+          };
+        case Network.SOLANA:
+          const fee = await attestationAdaptor.getAttestationFee();
+          const stateData = await attestationAdaptor.getContractStateData();
+          const ata = await getAssociatedTokenAddressSync(
+            NATIVE_MINT,
+            stateData.authority
+          );
+          const solanaBalance = await connection.getBalance(ata);
+          console.log(solanaBalance);
+          return {
+            balance: solanaBalance,
+            updateFee: fee.updateAttestationFee,
+            createFee: fee.createAttestationFee,
           };
         default:
           throw new Error("Network not supported");
@@ -222,6 +258,12 @@ const useNetwork = (network: Network) => {
               ],
             },
           ]);
+          break;
+        case Network.SOLANA:
+          await attestationAdaptor.withdraw(address);
+          break;
+        default:
+          throw new Error("Network not supported");
       }
     },
   };
