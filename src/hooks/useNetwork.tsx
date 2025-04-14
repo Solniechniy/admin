@@ -22,7 +22,8 @@ import {
   useWallet,
 } from "@solana/wallet-adapter-react";
 import { AttestationProgram } from "@/provider/solana-provider";
-import { Wallet } from "@coral-xyz/anchor";
+import { BN, Wallet } from "@coral-xyz/anchor";
+import { TonConnectButton, useTonWallet } from "@tonconnect/ui-react";
 
 import { getAssociatedTokenAddressSync, NATIVE_MINT } from "@solana/spl-token";
 const useNetwork = (network: Network) => {
@@ -35,6 +36,7 @@ const useNetwork = (network: Network) => {
   const [isNearConnected, setIsNearConnected] = useState(false);
   const { connection } = useConnection();
   const wallet = useAnchorWallet();
+  const tonWallet = useTonWallet();
 
   const attestationAdaptor = new AttestationProgram(
     connection,
@@ -72,6 +74,8 @@ const useNetwork = (network: Network) => {
           return isNearConnected;
         case Network.SOLANA:
           return Boolean(publicKey);
+        case Network.TON:
+          return Boolean(tonWallet);
         default:
           return false;
       }
@@ -88,6 +92,8 @@ const useNetwork = (network: Network) => {
           return <button onClick={openModal}>Connect</button>;
         case Network.SOLANA:
           return <WalletMultiButton />;
+        case Network.TON:
+          return <TonConnectButton />;
         default:
           throw new Error("Network not supported");
       }
@@ -148,6 +154,13 @@ const useNetwork = (network: Network) => {
             },
           ]);
         case Network.SOLANA:
+          await attestationAdaptor.updateAttestationFee(
+            new BN(
+              parseTokenAmount(fee, networkConfig.nativeCurrency.decimals)
+            ),
+            type
+          );
+          break;
       }
     },
     getAttestationData: async () => {

@@ -8,7 +8,12 @@ import {
   Transaction,
   WalletSelectorState,
 } from "@near-wallet-selector/core";
-import type { WalletSelector, AccountState } from "@near-wallet-selector/core";
+import type {
+  WalletSelector,
+  AccountState,
+  WalletModuleFactory,
+  BrowserWallet,
+} from "@near-wallet-selector/core";
 import { setupModal } from "@near-wallet-selector/modal-ui";
 import type { WalletSelectorModal } from "@near-wallet-selector/modal-ui";
 import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
@@ -150,7 +155,7 @@ export const WalletSelectorContextProvider = ({
     const selectorInstance = await setupWalletSelector({
       network: NETWORK_ID as NetworkId,
       debug: true,
-      modules: [setupMyNearWallet()],
+      modules: [setupMyNearWallet() as WalletModuleFactory<BrowserWallet>],
     });
     const modalInstance = setupModal(selectorInstance, {
       contractId: CONTRACT_ID as string,

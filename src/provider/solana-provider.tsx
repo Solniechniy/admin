@@ -28,9 +28,6 @@ import {
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 
 export const SolanaProvider = ({ children }: PropsWithChildren) => {
-  // const network = WalletAdapterNetwork.Mainnet;
-
-  //   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
   const endpoint =
     "https://mainnet.helius-rpc.com/?api-key=e5134d0c-9f20-48b6-ada5-33583b7f78fc";
   const wallets = useMemo(() => [new PhantomWalletAdapter() as Adapter], []);
@@ -108,12 +105,11 @@ export class AttestationProgram {
     if (!sender) return;
     const stateData = await this.getContractStateData();
     const address = stateData.authority.toBase58();
-    console.log("authority", address);
+
     const ata = await getAssociatedTokenAddressSync(
       NATIVE_MINT,
       new PublicKey(address)
     );
-    console.log("ata", ata.toBase58());
 
     const withdrawInstruction = createCloseAccountInstruction(
       ata,

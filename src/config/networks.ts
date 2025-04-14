@@ -131,6 +131,20 @@ export const networks: NetworkConfig[] = [
       symbol: "SOL",
     },
   },
+  {
+    id: Network.TON,
+    name: "Ton Mainnet",
+    chainId: "0x1",
+    rpcUrl: "https://toncenter.com/api/v2/json-rpc",
+    moduleContract: null,
+    portalContract: null,
+    attestationContract: "EQAvUDmCAM9Zl_i3rXeYA2n-s_uhM4rTBhzAQUeJIxEOB62i",
+    nativeCurrency: {
+      decimals: 9,
+      name: "TON",
+      symbol: "TON",
+    },
+  },
 ];
 
 export const networksMap = networks.reduce((acc, network) => {
