@@ -1,4 +1,4 @@
-import { toNano } from "@ton/core";
+import { SenderArguments, toNano } from "@ton/core";
 
 export const TON_DEFAULT_GAS = toNano("0.05");
 export const TON_MIN_COMMISSION = toNano("0.01");
@@ -17,12 +17,36 @@ import {
 
 import { TonApiClient, Api } from "@ton-api/client";
 import { ContractAdapter } from "@ton-api/ton-adapter";
+import { TonConnectUI } from "@tonconnect/ui-react";
+
+export const DEFAULT_GAS = toNano("0.05");
+
+export const createTonSender = (tonClient: TonConnectUI): Sender => {
+  return {
+    send: async (args: SenderArguments) => {
+      try {
+        await tonClient.sendTransaction({
+          messages: [
+            {
+              address: args.to.toString(),
+              amount: args.value.toString(),
+              payload: args.body?.toBoc().toString("base64"),
+            },
+          ],
+          validUntil: Date.now() + 5 * 60 * 1000,
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    },
+  };
+};
 
 const httpClient = new TonApiClient({
   baseUrl: "https://tonapi.io",
   baseApiParams: {
     headers: {
-      Authorization: `Bearer ${"AE5MP66NI5OVIDIAAAAB5BIW53F77XGUIWDAN2KOCUAQDYEXEEE3AKTAZBKBUNEQ2XBYNNI"}`,
+      Authorization: `Bearer AE5MP66NI5OVIDIAAAAB5BIW53F77XGUIWDAN2KOCUAQDYEXEEE3AKTAZBKBUNEQ2XBYNNI`,
       "Content-type": "application/json",
     },
   },
@@ -68,6 +92,16 @@ export class HapiTonAttestation implements Contract {
 
   static createFromAddress(address: string) {
     return contractAdapter.open(new HapiTonAttestation(toAddress(address)));
+  }
+
+  async getCreateAttestationFee(provider: ContractProvider): Promise<bigint> {
+    const result = await provider.get("get_create_attestation_fee", []);
+    return result.stack.readBigNumber();
+  }
+
+  async getUpdateAttestationFee(provider: ContractProvider): Promise<bigint> {
+    const result = await provider.get("get_update_attestation_fee", []);
+    return result.stack.readBigNumber();
   }
 
   async sendChangeCreateAttestationFee(

@@ -23,9 +23,21 @@ import {
 } from "@solana/wallet-adapter-react";
 import { AttestationProgram } from "@/provider/solana-provider";
 import { BN, Wallet } from "@coral-xyz/anchor";
-import { TonConnectButton, useTonWallet } from "@tonconnect/ui-react";
+import {
+  TonConnectButton,
+  useTonConnectUI,
+  useTonWallet,
+} from "@tonconnect/ui-react";
 
 import { getAssociatedTokenAddressSync, NATIVE_MINT } from "@solana/spl-token";
+import {
+  HapiTonAttestation,
+  publicClient,
+  createTonSender,
+  DEFAULT_GAS,
+} from "@/provider/ton-provider";
+import { address, toNano } from "@ton/core";
+
 const useNetwork = (network: Network) => {
   const { openModal, RPCProvider, requestSignTransactions } =
     useWalletSelector();
@@ -38,6 +50,7 @@ const useNetwork = (network: Network) => {
   const wallet = useAnchorWallet();
   const tonWallet = useTonWallet();
 
+  const [tonConnectUI] = useTonConnectUI();
   const attestationAdaptor = new AttestationProgram(
     connection,
     wallet as Wallet,
@@ -161,6 +174,26 @@ const useNetwork = (network: Network) => {
             type
           );
           break;
+        case Network.TON:
+          const hapiTonContract = HapiTonAttestation.createFromAddress(
+            networksMap[Network.TON].attestationContract as string
+          );
+          type === "create"
+            ? await hapiTonContract.sendChangeCreateAttestationFee(
+                createTonSender(tonConnectUI),
+                {
+                  value: DEFAULT_GAS,
+                  amount: toNano(fee),
+                }
+              )
+            : await hapiTonContract.sendChangeUpdateAttestationFee(
+                createTonSender(tonConnectUI),
+                {
+                  value: DEFAULT_GAS,
+                  amount: toNano(fee),
+                }
+              );
+          break;
       }
     },
     getAttestationData: async () => {
@@ -221,6 +254,23 @@ const useNetwork = (network: Network) => {
             updateFee: fee.updateAttestationFee,
             createFee: fee.createAttestationFee,
           };
+        case Network.TON:
+          const hapiTonContract = HapiTonAttestation.createFromAddress(
+            networksMap[Network.TON].attestationContract as string
+          );
+          const tonUpdateFee = await hapiTonContract.getUpdateAttestationFee();
+          const tonCreateFee = await hapiTonContract.getCreateAttestationFee();
+          const { balance: balanceTon } =
+            await publicClient.accounts.getAccount(
+              address(networksMap[Network.TON].attestationContract as string)
+            );
+          console.log(balanceTon, tonUpdateFee, tonCreateFee);
+          return {
+            balance: balanceTon,
+            updateFee: tonUpdateFee,
+            createFee: tonCreateFee,
+          };
+
         default:
           throw new Error("Network not supported");
       }
@@ -274,6 +324,15 @@ const useNetwork = (network: Network) => {
           break;
         case Network.SOLANA:
           await attestationAdaptor.withdraw(address);
+          break;
+        case Network.TON:
+          const hapiTonContract = HapiTonAttestation.createFromAddress(
+            networksMap[Network.TON].attestationContract as string
+          );
+          await hapiTonContract.sendWithdraw(createTonSender(tonConnectUI), {
+            value: DEFAULT_GAS,
+            amount: toNano(amount),
+          });
           break;
         default:
           throw new Error("Network not supported");

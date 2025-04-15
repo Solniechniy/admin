@@ -43,6 +43,11 @@ const getWarningMessage = (network: Network) => {
         amount: `NEAR contract should have additional NEAR on balance to operate`,
       };
     }
+    case Network.TON: {
+      return {
+        account: `TON withdraw works only to owner account`,
+      };
+    }
     default:
       return {
         account: "EVM network withdraw only to owner account",
