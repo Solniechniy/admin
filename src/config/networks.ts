@@ -1,7 +1,7 @@
 import { getDefaultConfig } from "connectkit";
 import { http, createConfig } from "wagmi";
 
-import { arbitrum, base, bsc, Chain, linea } from "wagmi/chains";
+import { arbitrum, base, bsc, Chain, linea, mainnet } from "wagmi/chains";
 
 export enum Network {
   BASE = "base",
@@ -12,6 +12,7 @@ export enum Network {
   NEAR = "near",
   SOLANA = "solana",
   TON = "ton",
+  ETHEREUM = "ethereum",
 }
 
 export interface NetworkConfig {
@@ -41,6 +42,7 @@ export const config = createConfig(
       [bsc.id]: http(),
       [linea.id]: http(),
       [arbitrum.id]: http(),
+      [mainnet.id]: http(),
     },
   })
 );
@@ -57,6 +59,18 @@ export const networks: NetworkConfig[] = [
   //   portalContract: "0x838d82f110f5bdc23732c7acab5949d067594c39",
   //   nativeCurrency: bscTestnet.nativeCurrency,
   // },
+  {
+    id: Network.ETHEREUM,
+    chain: base,
+    name: "Ethereum Mainnet",
+    chainId: "0x1",
+    rpcUrl: "https://mainnet.infura.io/v3/27139bc332476e5706ee928fa5b8ee10",
+    blockExplorerUrl: "https://etherscan.io",
+    attestationContract: "score-v1.hapiprotocol.near",
+    moduleContract: null,
+    portalContract: null,
+    nativeCurrency: mainnet.nativeCurrency,
+  },
   {
     id: Network.BASE,
     chain: base,
