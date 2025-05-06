@@ -43,6 +43,11 @@ const getWarningMessage = (network: Network) => {
         amount: `NEAR contract should have additional NEAR on balance to operate`,
       };
     }
+    case Network.ETHEREUM: {
+      return {
+        amount: `ETHEREUM withdraw mechanism take all balance from contract`,
+      };
+    }
     case Network.TON: {
       return {
         account: `TON withdraw works only to owner account`,

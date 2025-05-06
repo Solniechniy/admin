@@ -66,7 +66,7 @@ export const networks: NetworkConfig[] = [
     chainId: "0x1",
     rpcUrl: "https://mainnet.infura.io/v3/27139bc332476e5706ee928fa5b8ee10",
     blockExplorerUrl: "https://etherscan.io",
-    attestationContract: "score-v1.hapiprotocol.near",
+    attestationContract: "0x63253e3352c0CAe9F6ee64E61ed461AE23F9c8b6",
     moduleContract: null,
     portalContract: null,
     nativeCurrency: mainnet.nativeCurrency,

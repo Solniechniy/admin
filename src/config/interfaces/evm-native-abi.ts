@@ -645,3 +645,5 @@ export const hapiEVMAbiNative = [
     type: "function",
   },
 ];
+
+export default hapiEVMAbiNative;

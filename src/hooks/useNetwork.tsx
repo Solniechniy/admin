@@ -1,6 +1,8 @@
 import { NetworkConfig, networks, networksMap } from "@/config/networks";
 
 import hapiProtocolABI from "@/config/interfaces/evm-module-abi";
+import hapiEVMAbiNative from "@/config/interfaces/evm-native-abi";
+
 import { config, Network } from "@/config/networks";
 import {
   getBalance,
@@ -82,6 +84,7 @@ const useNetwork = (network: Network) => {
         case Network.LINEA:
         case Network.ARBITRUM:
         case Network.BSC_TESTNET:
+        case Network.ETHEREUM:
           return isConnected;
         case Network.NEAR:
           return isNearConnected;
@@ -100,6 +103,7 @@ const useNetwork = (network: Network) => {
         case Network.LINEA:
         case Network.ARBITRUM:
         case Network.BSC_TESTNET:
+        case Network.ETHEREUM:
           return <ConnectKitButton />;
         case Network.NEAR:
           return <button onClick={openModal}>Connect</button>;
@@ -139,6 +143,20 @@ const useNetwork = (network: Network) => {
             hash: updateAttestationFee,
           });
           return tx;
+        case Network.ETHEREUM:
+        case Network.BSC_TESTNET:
+          const updateAttestationFeeNative = await writeContract(config, {
+            abi: hapiEVMAbiNative,
+            address: networkConfig.attestationContract as `0x${string}`,
+            functionName: type === "create" ? "setMintCost" : "setRemintCost",
+            args: [parseEther(fee)],
+          });
+
+          const txNative = await waitForTransactionReceipt(config, {
+            hash: updateAttestationFeeNative,
+          });
+          return txNative;
+
         case Network.NEAR:
           if (!networkConfig?.attestationContract) {
             throw new Error("Attestation contract not found");
@@ -224,6 +242,28 @@ const useNetwork = (network: Network) => {
             updateFee: updateAttestationFee,
             createFee: createAttestationFee,
           };
+        case Network.ETHEREUM:
+          const createAttestationFeeNative = await readContract(config, {
+            abi: hapiEVMAbiNative,
+            address: networkConfig.attestationContract as `0x${string}`,
+            functionName: "mintCost",
+          });
+
+          const updateAttestationFeeNative = await readContract(config, {
+            abi: hapiEVMAbiNative,
+            address: networkConfig.attestationContract as `0x${string}`,
+            functionName: "remintCost",
+          });
+
+          const balanceNative = await getBalance(config, {
+            address: networkConfig.portalContract as `0x${string}`,
+          });
+
+          return {
+            balance: balanceNative.value,
+            updateFee: updateAttestationFeeNative,
+            createFee: createAttestationFeeNative,
+          };
         case Network.NEAR:
           if (!networkConfig?.attestationContract) {
             throw new Error("Attestation contract not found");
@@ -299,6 +339,18 @@ const useNetwork = (network: Network) => {
             hash: withdrawBalance,
           });
           return tx;
+        case Network.ETHEREUM:
+          const withdrawBalanceNative = await writeContract(config, {
+            abi: hapiEVMAbiNative,
+            address: networkConfig.attestationContract as `0x${string}`,
+            functionName: "withdraw",
+            args: [address],
+          });
+
+          const txNative = await waitForTransactionReceipt(config, {
+            hash: withdrawBalanceNative,
+          });
+          return txNative;
 
         case Network.NEAR:
           if (!networkConfig?.attestationContract) {
